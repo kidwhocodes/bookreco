@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <link href="https://ir.ebaystatic.com/cr/v/c1/skin/v12.2.0/ds6/skin.min.css" rel="stylesheet">
+    <title>Books API Example</title>
+  </head>
+  <body>
+    <span class="textbox">
+        <input id="query" class="textbox__control" type="text" placeholder="Eg: Harry Potter" required="required"/>
+    </span>
+    <button id="searchbtn" class="btn btn--primary">Search</button>    
+    <div id="content"></div>
+    <script>
+      function handleResponse(response) {
+        if (!response.items) {
+          document.getElementById("content").innerHTML = "<h2>No results found</h2>";    
+          return;
+        }
+        document.getElementById("content").innerHTML = "<h2>Results</h2>";
+        for (var i = 0; i < response.items.length; i++) {
+            var item = response.items[i];
+            // in production code, item.text should have the HTML entities escaped.
+            document.getElementById("content").innerHTML += "<br>" + item.volumeInfo.title;
+            document.getElementById("content").innerHTML += "<br>" + item.volumeInfo.pageCount + " pages";
+            document.getElementById("content").innerHTML += "<br>" + item.volumeInfo.categories;
+            document.getElementById("content").innerHTML += `<br><a href="${item.volumeInfo.previewLink}" target="blank">Preview</a>`;
+            document.getElementById("content").innerHTML += "<br>" 
+        }                  
+      }
+
+      async function handleSearch() {
+          const query = document.getElementById("query").value;
+          const encodedQuery = encodeURIComponent(query);
+          const url = `https://www.googleapis.com/books/v1/volumes?q=${encodedQuery}`;
+          const response = await fetch(url);
+          const responseJSON = await response.json();
+          handleResponse(responseJSON);
+      }  
+      document.getElementById("searchbtn").addEventListener("click", handleSearch, false);  
+    </script>
+  </body>
+</html>
